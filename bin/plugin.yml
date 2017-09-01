@@ -1,0 +1,9 @@
+name: UCore
+version: 0.1
+author: XIROC
+
+main: ucore.UCore
+commands:
+   utilitycore:
+       usage: /<command>
+       aliases: [ucore, uc]
