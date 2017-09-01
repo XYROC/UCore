@@ -1,11 +1,13 @@
 package ucore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import ucore.command.CommandUCore;
+import ucore.lib.Data;
 import ucore.lib.ItemGen;
 import ucore.lib.Listeners;
 import ucore.lib.PlayerObject;
@@ -16,9 +18,12 @@ public class UCore extends JavaPlugin {
 	public static final ItemGen ITEMGEN = new ItemGen();
 
 	public static ArrayList<String> emtptyWorldsToGenerate;
+	
+	private Data data;
 
 	@Override
 	public void onEnable() {
+		initData();
 		emtptyWorldsToGenerate = new ArrayList<String>();
 		loadCommands();
 		new Listeners(this);
@@ -26,6 +31,7 @@ public class UCore extends JavaPlugin {
 
 	@Override
 	public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
+		System.out.print(worldName+"|"+id);
 		if (emtptyWorldsToGenerate.contains(worldName)) {
 			emtptyWorldsToGenerate.remove(worldName);
 			return new ChunkGeneratorEmpty();
@@ -137,6 +143,13 @@ public class UCore extends JavaPlugin {
 	private void loadCommands() {
 		CommandUCore commandUCore = new CommandUCore(this);
 		getCommand("utilitycore").setExecutor(commandUCore);
+	}
+	
+	public void initData() {
+		data = new Data();
+		data.appendList("lang_ger", new HashMap<String, Object>());
+		data.appendList("lang_en", new HashMap<String, Object>());
+
 	}
 
 }

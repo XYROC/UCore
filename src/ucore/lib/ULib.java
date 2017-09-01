@@ -29,7 +29,7 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutTitle.EnumTitleAction;
 import ucore.UCore;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 
-public class Functions {
+public class ULib {
 	
 
 	public static void spawnFallingBlock(Location location, Material material, byte data) {
@@ -138,13 +138,39 @@ public class Functions {
 		((CraftPlayer) player).getHandle().playerConnection.sendPacket(length);
 	}
 	
+	public static String getBukkitPath() {
+		String path = Bukkit.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		return path;
+	}
+	
+	public static String getBukkitFileName() {
+		String path = getBukkitPath();
+		String[] split = path.split("/");
+		return split[split.length-1];
+	}
+	
+	public static String getBukkitEnvironment() {
+		String path = getBukkitPath();
+		String[] split = path.split("/");
+		String file = split[split.length-1];
+		return path.substring(0, path.length()-file.length());
+	}
+	
 	public static void restartServerFromUnixShellScript(String shellScript){
 		/**
 		 * shellScript example: run-server.sh
 		 */
-		ProcessBuilder pb = new ProcessBuilder(shellScript);
+		/*ProcessBuilder pb = new ProcessBuilder(shellScript, "", "");
+		pb.directory(new File(getBukkitEnvironment()));
 		try {
 			pb.start();
+		} catch (IOException e) {
+			System.out.print("Failed to run "+shellScript+" : "+e.getCause());
+			e.printStackTrace();
+		}*/
+		String file = getBukkitEnvironment()+shellScript;
+		try {
+			Runtime.getRuntime().exec(file);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -153,7 +179,7 @@ public class Functions {
 	
 	public static void restartServerFromBatchFile(String batchFile){
 		/**
-		 * batchFile example: run-server.bat
+		 * batchFile example: 'run-server.bat'
 		 */
 		try {
 			Runtime.getRuntime().exec("cmd /c start "+batchFile);
@@ -165,7 +191,7 @@ public class Functions {
 	
 	public static void startServerFromUnixShellScript(String shellScript){
 		/**
-		 * shellScript example: run-server.sh
+		 * shellScript example: 'run-server.sh'
 		 */
 		/*ProcessBuilder pb = new ProcessBuilder(shellScript);
 		pb.directory(new File(Bukkit.class.getProtectionDomain().getCodeSource().getLocation().getFile()));
@@ -183,7 +209,7 @@ public class Functions {
 	
 	public static void startServerFromBatchFile(String batchFile){
 		/**
-		 * batchFile example: run-server.bat
+		 * batchFile example: 'run-server.bat'
 		 */
 		try {
 			Runtime.getRuntime().exec("cmd /c start "+batchFile);

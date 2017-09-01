@@ -10,14 +10,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import ucore.UCore;
-import ucore.lib.Functions;
+import ucore.lib.ULib;
 
 public class CommandUCore implements CommandExecutor {
 
-	private UCore core;
+	//private UCore core;
 
 	public CommandUCore(UCore core) {
-		this.core = core;
+		//this.core = core;
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class CommandUCore implements CommandExecutor {
 					Player player = (Player) sender;
 					if (player.isOp()) {
 						player.getLocation().getBlock().setType(Material.CHEST);
-						Functions.fillChestRandomly(player.getLocation(), UCore.ITEMGEN.getRandomItemList(4, 12), 4);
+						ULib.fillChestRandomly(player.getLocation(), UCore.ITEMGEN.getRandomItemList(4, 12), 4);
 					}
 				}
 			}
@@ -47,12 +47,16 @@ public class CommandUCore implements CommandExecutor {
 						+ ": Startet den Server neu");
 				sender.sendMessage(ChatColor.GOLD + "/uc title <title> <subTitle>" + ChatColor.GRAY
 						+ ": Sendet dir einen Titel (Spieler)");
+				sender.sendMessage(ChatColor.GOLD + "/uc path" + ChatColor.GRAY + ": Zeigt dir den Pfad des laufenden Minecraft-Servers");
 				return true;
+			}
+			if(args[0].equalsIgnoreCase("path")) {
+				sender.sendMessage(ChatColor.RED+"Minecraft-Server-Pfad: "+ULib.getBukkitPath());
 			}
 		}
 		if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("generateEmptyWorld")) {
-				Functions.generateEmtptyWorld(args[1], sender);
+				ULib.generateEmtptyWorld(args[1], sender);
 			}
 			if (args[0].equalsIgnoreCase("bounce")) {
 				Player target = Bukkit.getPlayer(args[1]);
@@ -85,14 +89,16 @@ public class CommandUCore implements CommandExecutor {
 				String file = args[1];
 				if (file.endsWith(".bat")) {
 					sender.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "Restarting server... ");
-					Functions.restartServerFromBatchFile(file);
+					ULib.restartServerFromBatchFile(file);
 					return true;
 				}
-				if (file.endsWith(".sh")) {
+				else if (file.endsWith(".sh")) {
 					sender.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "Restarting server... ");
-					Functions.startServerFromUnixShellScript(file);
-					Bukkit.shutdown();
+					ULib.restartServerFromUnixShellScript(file);
+					//Bukkit.shutdown();
 					return true;
+				} else {
+					sender.sendMessage(ChatColor.RED+"Unbekanntes Dateiformat.");
 				}
 			}
 		}
@@ -102,13 +108,13 @@ public class CommandUCore implements CommandExecutor {
 					Player player = (Player) sender;
 					String title = args[1];
 					String subTitle = args[2];
-					Functions.sendTitle(player, title, subTitle, ChatColor.GOLD, ChatColor.GRAY, 20, 100, 20);
+					ULib.sendTitle(player, title, subTitle, ChatColor.GOLD, ChatColor.GRAY, 20, 100, 20);
 				}
 			}
 			if (args[0].equalsIgnoreCase("invsee")) {
 				Player target = Bukkit.getPlayer(args[1]);
 				if (!sender.isOp()) {
-					sender.sendMessage(ChatColor.RED + "Du bist dazu nicht berechtigt.");
+					sender.sendMessage(ChatColor.RED + "Du bist nicht dazu berechtigt.");
 					return true;
 				}
 				if (target == null) {
