@@ -158,7 +158,7 @@ public class ULib {
 	
 	public static void restartServerFromUnixShellScript(String shellScript){
 		/**
-		 * shellScript example: run-server.sh
+		 * shellScript example: 'run-server.sh'
 		 */
 		/*ProcessBuilder pb = new ProcessBuilder(shellScript, "", "");
 		pb.directory(new File(getBukkitEnvironment()));
