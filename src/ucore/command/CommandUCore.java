@@ -1,11 +1,16 @@
 package ucore.command;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -14,11 +19,6 @@ import ucore.lib.ULib;
 
 public class CommandUCore implements CommandExecutor {
 
-	//private UCore core;
-
-	public CommandUCore(UCore core) {
-		//this.core = core;
-	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -36,9 +36,9 @@ public class CommandUCore implements CommandExecutor {
 				sender.sendMessage(ChatColor.GOLD + "/uc" + ChatColor.GRAY + ": UCore Hauptkommando");
 				sender.sendMessage(ChatColor.GOLD + "/uc help" + ChatColor.GRAY + ": Zeigt diese Liste");
 				sender.sendMessage(
-						ChatColor.GOLD + "/uc chest" + ChatColor.GRAY + ": Generiert eine Kiste mit Loot (Spieler)");
+						ChatColor.GOLD + "/uc chest" + ChatColor.GRAY + ": Generiert eine Kiste mit zufälligen Items. (Spieler-Kommando) (Fun)");
 				sender.sendMessage(ChatColor.GOLD + "/uc invsee <player> (<ec>)" + ChatColor.GRAY
-						+ ": Oeffnet den (Enderkisten-)Inventar eines Spielers (Spieler)");
+						+ ": Oeffnet das (Enderkisten-)Inventar eines Spielers (Spieler-Kommando)");
 				sender.sendMessage(ChatColor.GOLD + "/uc generateEmptyWorld <name>" + ChatColor.GRAY
 						+ ": Erstellt eine leere Welt");
 				sender.sendMessage(ChatColor.GOLD + "/uc bounce <player>" + ChatColor.GRAY
@@ -48,10 +48,36 @@ public class CommandUCore implements CommandExecutor {
 				sender.sendMessage(ChatColor.GOLD + "/uc title <title> <subTitle>" + ChatColor.GRAY
 						+ ": Sendet dir einen Titel (Spieler)");
 				sender.sendMessage(ChatColor.GOLD + "/uc path" + ChatColor.GRAY + ": Zeigt dir den Pfad des laufenden Minecraft-Servers");
+				sender.sendMessage(ChatColor.GOLD + "/uc config" + ChatColor.GRAY + ": Config-Hauptkommando");
+				sender.sendMessage(ChatColor.GOLD + "/uc config help" + ChatColor.GRAY + ": Config-Hilfe");
 				return true;
 			}
 			if(args[0].equalsIgnoreCase("path")) {
 				sender.sendMessage(ChatColor.RED+"Minecraft-Server-Pfad: "+ULib.getBukkitPath());
+			}
+			if (args[0].equalsIgnoreCase("restart")) {
+				FileConfiguration config = YamlConfiguration.loadConfiguration(new  File("plugins//UCore//config.yml"));
+				String file = config.getString("script.runServer");
+				if(file == null) {
+					sender.sendMessage(ChatColor.RED+"Es wurde noch kein Skript festgelegt.");
+					return true;
+				}else if(!new File(file).exists()) {
+					sender.sendMessage(ChatColor.RED+"Die festgelegte Skriptdatei existiert nicht.");
+					return true;
+				}
+				if (file.endsWith(".bat")) {
+					sender.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "Restarting server... ");
+					ULib.restartServerFromBatchFile(file);
+					return true;
+				}
+				else if (file.endsWith(".sh")) {
+					sender.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "Restarting server... ");
+					ULib.restartServerFromUnixShellScript(file);
+					//Bukkit.shutdown();
+					return true;
+				} else {
+					sender.sendMessage(ChatColor.RED+"Unbekanntes Dateiformat des Skripts. Nutze '.bat' oder '.sh'.");
+				}
 			}
 		}
 		if (args.length == 2) {
@@ -128,6 +154,29 @@ public class CommandUCore implements CommandExecutor {
 						return true;
 					}
 					p.openInventory(target.getInventory());
+				}
+			}
+		}
+		if(args.length > 1) {
+			if(args[0].equalsIgnoreCase("config")) {
+				if(args.length == 2) {
+					if(args[1].equalsIgnoreCase("help")) {
+						sender.sendMessage(ChatColor.GOLD + "/uc config" + ChatColor.GRAY + ": Config-Hauptkommando");
+						sender.sendMessage(ChatColor.GOLD + "/uc config setDefaultServerRunScript <file>" + ChatColor.GRAY + ": Setzt die Scriptdatei, die den Server startet.");
+					}
+				}
+				if(args.length == 3) {
+					if(args[1].equalsIgnoreCase("setDefaultServerRunScript")) {
+						File file = new File("plugins//UCore//config.yml");
+						FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+						config.set("script.runServer", args[2]);
+						try {
+							config.save(file);
+							sender.sendMessage(ChatColor.GRAY+"Der Server wird nun automatisch mit "+ChatColor.GREEN+"'"+args[2]+"'"+ChatColor.GRAY+" neu gestartet.");
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
 				}
 			}
 		}

@@ -141,15 +141,15 @@ public class UCore extends JavaPlugin {
 	}*/
 
 	private void loadCommands() {
-		CommandUCore commandUCore = new CommandUCore(this);
+		CommandUCore commandUCore = new CommandUCore();
 		getCommand("utilitycore").setExecutor(commandUCore);
 	}
 	
 	public void initData() {
 		data = new Data();
-		data.appendList("lang_ger", new HashMap<String, Object>());
+		data.appendList("config", new HashMap<String,Object>());
+		data.appendList("lang_de", new HashMap<String, Object>());
 		data.appendList("lang_en", new HashMap<String, Object>());
-
 	}
 
 }
