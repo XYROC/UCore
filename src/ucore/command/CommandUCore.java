@@ -56,9 +56,8 @@ public class CommandUCore implements CommandExecutor {
 				sender.sendMessage(ChatColor.RED+"Minecraft-Server-Pfad: "+ULib.getBukkitPath());
 			}
 			if (args[0].equalsIgnoreCase("restart")) {
-				FileConfiguration config = YamlConfiguration.loadConfiguration(new  File("plugins//UCore//config.yml"));
-				String file = config.getString("script.runServer");
-				if(file == null) {
+				String file = (String) UCore.getData().get("config", "script.runServer");
+				if(file.equalsIgnoreCase("")) {
 					sender.sendMessage(ChatColor.RED+"Es wurde noch kein Skript festgelegt.");
 					return true;
 				}else if(!new File(file).exists()) {
@@ -170,9 +169,20 @@ public class CommandUCore implements CommandExecutor {
 						File file = new File("plugins//UCore//config.yml");
 						FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 						config.set("script.runServer", args[2]);
+						UCore.getData().getList("config").put("script.runServer", args[2]);
 						try {
 							config.save(file);
 							sender.sendMessage(ChatColor.GRAY+"Der Server wird nun automatisch mit "+ChatColor.GREEN+"'"+args[2]+"'"+ChatColor.GRAY+" neu gestartet.");
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					} else if(args[1].equalsIgnoreCase("setEnableCommands")) {
+						File file = new File("plugins//UCore//config.yml");
+						FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+						config.set("UCore.enableCommands", Boolean.parseBoolean(args[2]));
+						UCore.getData().getList("config").put("enableCommands", true);
+						try {
+							config.save(file);
 						} catch (IOException e) {
 							e.printStackTrace();
 						}

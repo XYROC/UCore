@@ -1,8 +1,12 @@
 package ucore;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,14 +23,15 @@ public class UCore extends JavaPlugin {
 
 	public static ArrayList<String> emtptyWorldsToGenerate;
 	
-	private Data data;
+	private static Data data;
 
 	@Override
 	public void onEnable() {
-		initData();
-		emtptyWorldsToGenerate = new ArrayList<String>();
+		loadData();
+		loadConfiguration();
 		loadCommands();
 		new Listeners(this);
+		emtptyWorldsToGenerate = new ArrayList<String>();
 	}
 
 	@Override
@@ -141,15 +146,40 @@ public class UCore extends JavaPlugin {
 	}*/
 
 	private void loadCommands() {
-		CommandUCore commandUCore = new CommandUCore();
-		getCommand("utilitycore").setExecutor(commandUCore);
+		if(YamlConfiguration.loadConfiguration(new File("plugins//UCore//config.yml")).getBoolean("UCore.enableCommands")) {
+			CommandUCore commandUCore = new CommandUCore();
+			getCommand("utilitycore").setExecutor(commandUCore);
+		}
 	}
 	
-	public void initData() {
+	private void loadConfiguration() {
+		File file = new File("plugins//UCore//config.yml");
+		FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+		if(!file.exists()) {
+			config.set("UCore.enableCommands", false);
+			config.set("script.runServer", "");
+			data.getList("config").put("enableCommands", config.getBoolean("enableCommands"));
+			data.getList("config").put("script.runServer", config.getString("script.runServer"));
+			try {
+				config.save(file);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return;
+		}
+		data.getList("config").put("enableCommands", config.getBoolean("enableCommands"));
+		data.getList("config").put("script.runServer", config.getString("script.runServer"));
+	}
+	
+	public void loadData() {
 		data = new Data();
 		data.appendList("config", new HashMap<String,Object>());
-		data.appendList("lang_de", new HashMap<String, Object>());
-		data.appendList("lang_en", new HashMap<String, Object>());
+		// data.appendList("lang_de", new HashMap<String, Object>());
+		// data.appendList("lang_en", new HashMap<String, Object>());
+	}
+	
+	public static Data getData() {
+		return data;
 	}
 
 }

@@ -32,5 +32,6 @@ public class Listeners implements Listener{
 		System.out.println(e.getEntity().getName()+" died at X: "+e.getEntity().getLocation().getBlockX()+" Y:"+e.getEntity().getLocation().getBlockY()+" Z:"+e.getEntity().getLocation().getBlockZ());
 		e.getEntity().sendMessage("You died at X:"+e.getEntity().getLocation().getBlockX()+" Y:"+e.getEntity().getLocation().getBlockY()+" Z:"+e.getEntity().getLocation().getBlockZ());
 	}
+	
 
 }
