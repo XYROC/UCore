@@ -14,7 +14,7 @@ public class Data {
 		data.put(key, list);
 	}
 
-	public HashMap<String, Object> getList(String list){
+	public HashMap<String, Object> getList(String list) {
 		return data.get(list);
 	}
 

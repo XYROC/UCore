@@ -28,7 +28,7 @@ public class PermissionHandler {
 		hashPermissions.put(name, permission);
 		permissions.add(permission);
 	}
-	
+
 	public void addPermission(String name) {
 		hashPermissions.put(name, new Permission(name));
 		permissions.add(new Permission(name));
@@ -36,48 +36,51 @@ public class PermissionHandler {
 
 	public void removePermission(String name) {
 		hashPermissions.remove(name);
-		for(Permission p : permissions){
-			if(p.getName().equals(name)){
+		for (Permission p : permissions) {
+			if (p.getName().equals(name)) {
 				permissions.remove(p);
+				break;
 			}
 		}
 	}
 
 	public void permitPlayer(CommandSender sender, UUID uuid, String name) {
 		Player player = Bukkit.getPlayer(uuid);
-		if(player != null){
+		if (player != null) {
 			PlayerObject playerObject = new PlayerObject(uuid);
 			String[] var = name.split(".");
-			if(hashPermissions.containsKey(name)){
-				if(var.length > 1){
-					String permission = var[var.length-1];
-					if(permission.equals("*")){
-						for(Permission p : permissions){
-							if(p.getName().startsWith(name)){
+			if (hashPermissions.containsKey(name)) {
+				if (var.length > 1) {
+					String permission = var[var.length - 1];
+					if (permission.equals("*")) {
+						for (Permission p : permissions) {
+							if (p.getName().startsWith(name)) {
 								p.add(playerObject);
 								hashPermissions.get(p.getName()).add(playerObject);
 							}
 						}
-						sender.sendMessage(ChatColor.GREEN+"Dem Spieler "+player.getName()+" wurde erfolgreich die Berechtigung '"+name+"' hinzugefügt");
+						sender.sendMessage(ChatColor.GREEN + "Dem Spieler " + player.getName()
+								+ " wurde erfolgreich die Berechtigung '" + name + "' hinzugefügt");
 						return;
-					}else{
+					} else {
 						hashPermissions.get(name).add(playerObject);
-						for(Permission p : permissions){
-							if(p.getName().equals(name)){
+						for (Permission p : permissions) {
+							if (p.getName().equals(name)) {
 								p.add(playerObject);
 								break;
 							}
 						}
-						sender.sendMessage(ChatColor.GREEN+"Dem Spieler "+player.getName()+" wurde erfolgreich die Berechtigung '"+name+"' hinzugefügt");
+						sender.sendMessage(ChatColor.GREEN + "Dem Spieler " + player.getName()
+								+ " wurde erfolgreich die Berechtigung '" + name + "' hinzugefügt");
 					}
 					return;
 				}
-				sender.sendMessage(ChatColor.RED+"Ungültige Angabe.");
+				sender.sendMessage(ChatColor.RED + "Ungültige Angabe.");
 				return;
 			}
-			sender.sendMessage(ChatColor.RED+"Die Berechtigung '"+name+"' konnte nicht gefunden werden.");
-		}else{
-			sender.sendMessage(ChatColor.RED+"Der Spieler konnte nicht gefunden werden.");
+			sender.sendMessage(ChatColor.RED + "Die Berechtigung '" + name + "' konnte nicht gefunden werden.");
+		} else {
+			sender.sendMessage(ChatColor.RED + "Der Spieler konnte nicht gefunden werden.");
 		}
 	}
 
@@ -92,7 +95,7 @@ public class PermissionHandler {
 	public HashMap<String, Permission> getPermissionsHashmap() {
 		return hashPermissions;
 	}
-	
+
 	public ArrayList<Permission> getPermissions() {
 		return permissions;
 	}
